@@ -1,7 +1,8 @@
 <template>
   
-     <router-link to='/info'>路由跳转</router-link>
-  
+   <div>
+       <el-button type="primary">主要按钮</el-button>
+   </div>
  
 </template>
 
