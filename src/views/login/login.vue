@@ -1,6 +1,5 @@
 <template>
-  <router-view></router-view>
- 
+ <div>我是首页88888</div>
 </template>
 
 <script>
