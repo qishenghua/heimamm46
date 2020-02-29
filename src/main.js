@@ -8,6 +8,10 @@ import router from './router/index.js'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 Vue.use(ElementUI);
+// 导入公共样式
+import '../src/style/base.css'
+// 导入less
+
 new Vue({
   // 挂载到顶级实例上
   router,
