@@ -25,10 +25,8 @@
         </el-form-item>
 
   </el-col>
-  <el-col :span="1">
-      
-  </el-col>
-  <el-col :span="6">
+ 
+  <el-col   :span="7">
       <img  class="img" src="../../assets/login_captcha.png" alt="">
   </el-col>
   
