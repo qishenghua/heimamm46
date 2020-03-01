@@ -46,17 +46,25 @@
         </el-form-item>
       </el-form>
       <el-button type="primary" class="btn">登录</el-button>
-      <el-button type="primary" class="btn">注册</el-button>
+      <el-button type="primary" class="btn"  @click="registterDialog">注册</el-button>
     </div>
     <!-- 右边盒子 -->
     <div class="right">
+        <!-- 右边图片 -->
       <img  src="../../assets/login-logo.png" alt />
     </div>
+    <registterDialog ref="registterDialog"></registterDialog>
   </div>
 </template>
 
-<script>
+<script> 
+// 导入注册对话框
+import registterDialog from './components/registerDialog.vue'
 export default {
+    // 注册组件
+    components:{
+        registterDialog
+    },
   name: "login",
     methods: {
       submitForm(formName) {
@@ -68,6 +76,9 @@ export default {
             return false;
           }
         });
+      },
+      registterDialog(){
+          this.$refs.registterDialog. dialogFormVisible=true
       }
     },
    data() {
