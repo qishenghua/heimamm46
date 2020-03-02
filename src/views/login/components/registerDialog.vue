@@ -158,6 +158,16 @@ export default {
         return isJPG && isLt2M;
       },
       gsm(){
+        //手机号校验
+        const reg = /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/
+        if (reg.test(this.form.phone)!=true) {
+          return this.$message.error('手机号码的格式不正确哦')
+        }
+        // 验证码校验
+        if (this.form.code.length!=4) {
+          return this.$message.error('验证码的长度不对哦')
+          
+        }
         if (this.delay==0) {
           //开启倒计时
           this.delay=60
