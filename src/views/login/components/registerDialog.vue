@@ -1,6 +1,19 @@
 <template>
   <el-dialog  class="register-Dialog"  width="600px"  center title="用户注册" :visible.sync="dialogFormVisible">
   <el-form :model="form" status-icon  :rules="rules" ref="registerForm">
+    <el-form-item label="头像">
+      <el-upload  
+  class="avatar-uploader"
+  :action="uploadUrl"
+  :show-file-list="false"
+  :on-success="handleAvatarSuccess"
+  :before-upload="beforeAvatarUpload"
+  name='image'
+  >
+  <img v-if="imageUrl" :src="imageUrl" class="avatar">
+  <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+</el-upload>
+    </el-form-item>
     <el-form-item label="昵称" prop="username" :label-width="formLabelWidth">
       <el-input v-model="form.username" autocomplete="off"></el-input>
     </el-form-item>
@@ -49,8 +62,9 @@
 </template>
 
 <script>
-// 导入axios
-import axios from 'axios'
+// 导入抽取的接口
+import {sendsms} from '../../../api/register'
+
 // 定义校验规则-手机
 const checkPhone = (rule,value,callback) =>{
     // 获取value
@@ -96,6 +110,10 @@ export default {
         imgCode:process.env.VUE_APP_URL+'/captcha?type=sendsms',
         // 定义倒计时
         delay:'',
+        // 定义头像预览地址
+        imageUrl:'',
+        // 定义上传接口地址
+        uploadUrl:process.env.VUE_APP_URL+'/uploads',
          rules: {
           username: [
             { required: true, message: '用户名不能为空', trigger: 'blur' },
@@ -122,6 +140,23 @@ export default {
       changeCode(){
         this.imgCode= process.env.VUE_APP_URL+'/captcha?type=sendsms&t='+Date.now();
       },
+        handleAvatarSuccess(res, file) {
+          // 临时本地存储
+          window.console.log(file );
+        this.imageUrl = URL.createObjectURL(file.raw);
+      },
+      beforeAvatarUpload(file) {
+        const isJPG = file.type === 'image/jpeg'||'image/png'||'image/gif';
+        const isLt2M = file.size / 1024 / 1024 < 2;
+
+        if (!isJPG) {
+          this.$message.error('上传头像图片只能是 JPG 格式!');
+        }
+        if (!isLt2M) {
+          this.$message.error('上传头像图片大小不能超过 2MB!');
+        }
+        return isJPG && isLt2M;
+      },
       gsm(){
         if (this.delay==0) {
           //开启倒计时
@@ -134,14 +169,10 @@ export default {
               clearInterval(time)
             }
           },100)
-            axios({
-          url:process.env.VUE_APP_URL+'/sendsms',
-          method:'post',
-          data: { 
-            code:this.form.code,
+          
+        sendsms({
+          code:this.form.code,
             phone:this.form.phone
-          },
-         withCredentials:true  //是否携带跨域cookie  默认为false
         }).then(res=>{
           //成功回调
          window.console.log(res);
@@ -178,5 +209,32 @@ export default {
     .register-btn{
         width: 100%;
     }
+      .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
+  .el-dialog--center .el-dialog__body {
+    text-align: center;
+    padding: 25px 25px 30px;
+}
 }
 </style>
