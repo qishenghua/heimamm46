@@ -1,7 +1,7 @@
 <template>
   <el-dialog  class="register-Dialog"  width="600px"  center title="用户注册" :visible.sync="dialogFormVisible">
   <el-form :model="form" status-icon  :rules="rules" ref="registerForm">
-    <el-form-item label="头像">
+    <el-form-item label="头像" prop="avatar">
       <el-upload  
   class="avatar-uploader"
   :action="uploadUrl"
@@ -102,7 +102,9 @@ export default {
             // 定义手机
             phone:'',
             // 定义图片验证码
-            code:''
+            code:'',
+            // 定义头像图片
+            avatar:''
         
         },
         formLabelWidth: '62px'  , //文本的长度
@@ -124,6 +126,10 @@ export default {
             { required: true, message: '密码不能为空', trigger: 'blur' },
              { min: 6, max: 12, message: '密码长度在 6 到 12 个字符', trigger: 'change' }
           ],
+          avatar: [
+            { required: true, message: '头像不能为空', trigger: 'blur' },
+           
+          ],
           email: [
             { required: true, message: '邮箱不能为空', trigger: 'blur' },
             { validator: checkEmail, trigger: 'blur' }
@@ -142,15 +148,18 @@ export default {
       },
         handleAvatarSuccess(res, file) {
           // 临时本地存储
-          window.console.log(file );
+          window.console.log('服务器',res,file);
         this.imageUrl = URL.createObjectURL(file.raw);
+        // 保存服务器返回的图片地址
+        this.form.avatar=res.data.file_path
       },
       beforeAvatarUpload(file) {
+       window.console.log(file);
         const isJPG = file.type === 'image/jpeg'||'image/png'||'image/gif';
         const isLt2M = file.size / 1024 / 1024 < 2;
 
         if (!isJPG) {
-          this.$message.error('上传头像图片只能是 JPG 格式!');
+          this.$message.error('上传头像图片只能是图片格式!');
         }
         if (!isLt2M) {
           this.$message.error('上传头像图片大小不能超过 2MB!');
