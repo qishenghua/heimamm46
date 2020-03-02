@@ -56,6 +56,8 @@
 </template>
 
 <script> 
+// 测试环境变量基地址
+window.console.log(process.env.VUE_APP_URL);
 // 导入注册对话框
 import registterDialog from './components/registerDialog.vue'
 export default {

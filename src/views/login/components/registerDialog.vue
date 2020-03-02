@@ -17,22 +17,25 @@
     <el-row>
   <el-col :span="17">
       <el-form-item label="图形码" :label-width="formLabelWidth">
-      <el-input v-model="form.name" autocomplete="off"></el-input>
+      <el-input v-model="form.code" autocomplete="off"></el-input>
     </el-form-item>
   </el-col>
   <el-col  :offset="1" :span="6">
-      <img class="register-code" src="../../../assets/login_captcha.png" alt="">
+      <img  @click="changeCode" class="register-code" :src="imgCode" alt="">
   </el-col>
 </el-row>
     <el-row>
-        <!-- 验证码 -->
+        <!-- 短信验证码 -->
   <el-col :span="17">
       <el-form-item label="验证码" :label-width="formLabelWidth">
       <el-input v-model="form.name" autocomplete="off"></el-input>
     </el-form-item>
   </el-col>
   <el-col  :offset="1" :span="6">
-      <el-button  class="register-btn">获取用户验证码</el-button>
+    <!-- 点击发送，获取短信 -->
+      <el-button  :disabled="delay!=0" @click="gsm"  class="register-btn">
+        {{this.delay==0?'点击获取验证码':`还有${delay}继续获取`}}
+      </el-button>
   </el-col>
 </el-row>
     
@@ -46,6 +49,8 @@
 </template>
 
 <script>
+// 导入axios
+import axios from 'axios'
 // 定义校验规则-手机
 const checkPhone = (rule,value,callback) =>{
     // 获取value
@@ -81,10 +86,16 @@ export default {
         //   定义邮箱
             email:'',
             // 定义手机
-            phone:''
+            phone:'',
+            // 定义图片验证码
+            code:''
         
         },
         formLabelWidth: '62px'  , //文本的长度
+        // 图片验证码
+        imgCode:process.env.VUE_APP_URL+'/captcha?type=sendsms',
+        // 定义倒计时
+        delay:'',
          rules: {
           username: [
             { required: true, message: '用户名不能为空', trigger: 'blur' },
@@ -106,6 +117,46 @@ export default {
           ],
          }
         }
+    },
+    methods: {
+      changeCode(){
+        this.imgCode= process.env.VUE_APP_URL+'/captcha?type=sendsms&t='+Date.now();
+      },
+      gsm(){
+        if (this.delay==0) {
+          //开启倒计时
+          this.delay=60
+          const  time = setInterval(()=>{
+            // 设置一个定时器，时间递减
+            this.delay--
+            if (this.delay==0) {
+              // 如果为0 ，清除倒计时
+              clearInterval(time)
+            }
+          },100)
+            axios({
+          url:process.env.VUE_APP_URL+'/sendsms',
+          method:'post',
+          data: { 
+            code:this.form.code,
+            phone:this.form.phone
+          },
+         withCredentials:true  //是否携带跨域cookie  默认为false
+        }).then(res=>{
+          //成功回调
+         window.console.log(res);
+         if (res.data.code===200) {
+           this.$message.success('获取成功'+res.data.data.captcha)
+           
+         }else if (res.data.code===0) {
+           this.$message.error(res.data.message)
+           
+         }
+         
+        });
+        }
+      
+      }
     },
 }
 </script>
