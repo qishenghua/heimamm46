@@ -41,7 +41,7 @@
         <!-- 短信验证码 -->
   <el-col :span="17">
       <el-form-item label="验证码" :label-width="formLabelWidth">
-      <el-input v-model="form.name" autocomplete="off"></el-input>
+      <el-input v-model="form.rcode" autocomplete="off"></el-input>
     </el-form-item>
   </el-col>
   <el-col  :offset="1" :span="6">
@@ -56,7 +56,7 @@
   </el-form>
   <div slot="footer" class="dialog-footer">
     <el-button @click="dialogFormVisible = false">取 消</el-button>
-    <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+    <el-button type="primary" @click="submitForm('registerForm')">确 定</el-button>
   </div>
 </el-dialog>
 </template>
@@ -104,7 +104,9 @@ export default {
             // 定义图片验证码
             code:'',
             // 定义头像图片
-            avatar:''
+            avatar:'',
+            // 定义短信验证码
+            rcode:''
         
         },
         formLabelWidth: '62px'  , //文本的长度
@@ -143,6 +145,17 @@ export default {
         }
     },
     methods: {
+      //提交表单
+       submitForm(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+           this.$message.success('验证成功')
+          } else {
+            this.$message.error('验证失败')
+            return false;
+          }
+        });
+      },
       changeCode(){
         this.imgCode= process.env.VUE_APP_URL+'/captcha?type=sendsms&t='+Date.now();
       },

@@ -43,7 +43,7 @@
           </el-checkbox-group>
         </el-form-item>
       </el-form>
-      <el-button type="primary" class="btn">登录</el-button>
+      <el-button type="primary" class="btn" @click="submitForm('form')">登录</el-button>
       <el-button type="primary" class="btn"  @click="registterDialog">注册</el-button>
     </div>
     <!-- 右边盒子 -->
@@ -69,10 +69,10 @@ export default {
     methods: {
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
-          if (valid) {
-            alert('submit!');
+           if (valid) {
+           this.$message.success('验证成功')
           } else {
-            console.log('error submit!!');
+            this.$message.error('验证失败')
             return false;
           }
         });
