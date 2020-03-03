@@ -29,7 +29,7 @@
     <!-- 图形码 -->
     <el-row>
   <el-col :span="17">
-      <el-form-item label="图形码" :label-width="formLabelWidth">
+      <el-form-item label="图形码" prop="code" :label-width="formLabelWidth">
       <el-input v-model="form.code" autocomplete="off"></el-input>
     </el-form-item>
   </el-col>
@@ -40,7 +40,7 @@
     <el-row>
         <!-- 短信验证码 -->
   <el-col :span="17">
-      <el-form-item label="验证码" :label-width="formLabelWidth">
+      <el-form-item label="验证码"  prop="rcode" :label-width="formLabelWidth">
       <el-input v-model="form.rcode" autocomplete="off"></el-input>
     </el-form-item>
   </el-col>
@@ -63,7 +63,7 @@
 
 <script>
 // 导入抽取的接口
-import {sendsms} from '../../../api/register'
+import {sendsms,register} from '../../../api/register'
 
 // 定义校验规则-手机
 const checkPhone = (rule,value,callback) =>{
@@ -149,7 +149,29 @@ export default {
        submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-           this.$message.success('验证成功')
+          //  this.$message.success('验证成功')
+          // 验证成功调用接口
+          register({
+            username:this.form.username,
+            password:this.form.password,
+            email:this.form.email,
+            phone:this.form.phone,
+            avatar:this.form.avatar,
+            rcode:this.form.rcode,
+          }).then(res=>{
+            window.console.log(res);
+            if (res.data.code===200) {
+              this.$message.success('恭喜，注册成功')
+              // 注册成功之后关闭对话框
+              this.dialogFormVisible= false
+              // 关闭之后重置表单
+             this.$refs[formName].resetFields();
+              // 表单之外的人为清空
+              this.imageUrl=""
+            }else if (res.data.code===201) {
+              this.$message.error(res.data.message)
+            }
+          })
           } else {
             this.$message.error('验证失败')
             return false;
@@ -165,6 +187,8 @@ export default {
         this.imageUrl = URL.createObjectURL(file.raw);
         // 保存服务器返回的图片地址
         this.form.avatar=res.data.file_path
+        // 表单外的字段人为验证
+        this.$refs.registerForm.validateField('avatar')
       },
       beforeAvatarUpload(file) {
        window.console.log(file);
