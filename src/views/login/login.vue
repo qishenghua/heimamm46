@@ -27,13 +27,13 @@
   </el-col>
  
   <el-col   :span="7">
-      <img  class="img" src="../../assets/login_captcha.png" alt="">
+      <img   @click="changeCode" class="img" :src="codeUrl" alt="">
   </el-col>
   
 </el-row>
        
-        <el-form-item>
-          <el-checkbox-group v-model="form.type" class="tip">
+        <el-form-item  >
+          <el-checkbox-group v-model="form.check" class="tip">
             <el-checkbox name="type">
               <span>我已同意并阅读</span>
               <el-link type="primary">用户协议</el-link>
@@ -56,11 +56,14 @@
 </template>
 
 <script> 
+// 导入手机的校验方法
 import {checkPhone} from '../../utils/validator'
 // 测试环境变量基地址
 window.console.log(process.env.VUE_APP_URL);
 // 导入注册对话框
 import registterDialog from './components/registerDialog.vue'
+// 导入登录接口
+import {login}  from '../../api/login'
 export default {
     // 注册组件
     components:{
@@ -71,13 +74,38 @@ export default {
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
            if (valid) {
-           this.$message.success('验证成功')
+          //  this.$message.success('验证成功')
+          //  判断用户是否勾选协议
+           if (this.form.check!=true) {
+             return this.$message.warning('请勾用户协议')
+           }
+          //  勾选之后凋登录接口
+          login({
+            phone:this.form.phone,
+            password:this.form.password,
+            code:this.form.logoCode
+          }).then(res=>{
+            window.console.log(res);
+            if (res.data.code===200) {
+              // 提示登录成功
+              this.$message.success('欢迎来到王者农药')
+              // 成功之后跳转首页
+              this.$router.push('/index')
+              // 保存token
+              window.localStorage.setItem('heimamm',res.data.data.token)
+            }else if (res.data.code===202) {
+              this.$message.error(res.data.message)
+            }
+          })
           } else {
             this.$message.error('验证失败')
             return false;
           }
         });
       },
+      changeCode(){
+          this.codeUrl=process.env.VUE_APP_URL+'/captcha?type=login&t='+Date.now();
+        },
       registterDialog(){
           this.$refs.registterDialog. dialogFormVisible=true
       }
@@ -88,9 +116,12 @@ export default {
       phone:'',
       password:'',
       logoCode:'',
-      type:''
-
+     
+      // 是否勾选
+  check:false
       },
+      // 定义登录验证码
+      codeUrl:process.env.VUE_APP_URL+'/captcha?type=login',
       rules: {
           phone: [
             { required: true, message: '手机号格式不正确', trigger: 'blur' },
