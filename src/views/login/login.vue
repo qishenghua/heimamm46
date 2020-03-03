@@ -56,6 +56,7 @@
 </template>
 
 <script> 
+import {checkPhone} from '../../utils/validator'
 // 测试环境变量基地址
 window.console.log(process.env.VUE_APP_URL);
 // 导入注册对话框
@@ -93,6 +94,7 @@ export default {
       rules: {
           phone: [
             { required: true, message: '手机号格式不正确', trigger: 'blur' },
+            { validator: checkPhone, trigger: 'change' }
           
           ],
           password: [
