@@ -64,6 +64,8 @@ window.console.log(process.env.VUE_APP_URL);
 import registterDialog from './components/registerDialog.vue'
 // 导入登录接口
 import {login}  from '../../api/login'
+// 导入抽取的设置token函数
+import  {setToken}  from '../../utils/token'
 export default {
     // 注册组件
     components:{
@@ -92,7 +94,8 @@ export default {
               // 成功之后跳转首页
               this.$router.push('/index')
               // 保存token
-              window.localStorage.setItem('heimamm',res.data.data.token)
+              // window.localStorage.setItem('heimamm',res.data.data.token)
+              setToken(res.data.data.token);
             }else if (res.data.code===202) {
               this.$message.error(res.data.message)
             }
