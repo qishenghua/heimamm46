@@ -65,12 +65,44 @@ const  router = new VueRouter({
 import NProgress  from 'nprogress'
 // 导入进度条样式
 import 'nprogress/nprogress.css'
+// 导入获取token的工具函数
+import {getToken,removeToken}  from '../utils/token'
+// 导入用户信息接口
+import {info}  from '../api/index'
+// 按需导入
+import {Message}  from 'element-ui'
 // 前置导航守卫
 router.beforeEach((to, from, next) => {
     // 开启精度条
     NProgress.start();
-    // 必须往后执行
-    next()
+    // 判断是否能往后走
+    if (to.path!='/login') {
+        // 判断登录状态
+        // 非空判断  如果为空
+        if (getToken()==undefined) {
+            // 提示用户登录     打回登录页
+            Message.warning('登录状态有误，请检查')
+            next('/login')
+        }else{
+            // 真假判断
+            info().then(res=>{
+                // 如果token错误就删除，并打回登录页
+                window.console.log(res);
+                if (res.data.code===206) {
+                    Message.warning('登录状态有误，请检查')
+                    removeToken();
+                    next('/login')
+                }else if (res.data.code===200) {
+                    // 成功，放走
+                    next();
+                }
+            })
+        }
+    }else{
+        //是登录页 必须往后执行
+        next();
+        
+    }
   })
 //  后置导航守卫
 router.afterEach(() => {

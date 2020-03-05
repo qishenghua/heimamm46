@@ -53,9 +53,9 @@
 
 <script>
 //获取用户信息接口
-import { info, logout } from "../../api/index";
+import { logout } from "../../api/index";
 // 用户退出移除token
-import { removeToken } from "../../utils/token";
+import { removeToken} from "../../utils/token";
 export default {
   name: "index",
   data() {
@@ -68,6 +68,15 @@ export default {
     isCollapse:false,
     };
   },
+//   beforeCreate() {
+//     //   token 非空判断
+//       if (getToken() == undefined) {
+//         //   提示用户登录
+//         this.$message.warning('请先登录')
+//         // 打回登录页
+//         this.$router.push('/login')
+//       }
+//   },
   methods: {
     logout() {
       this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
@@ -96,13 +105,21 @@ export default {
         });
     }
   },
-  created() {
-    info().then(res => {
-      window.console.log(res);
-      (this.username = res.data.data.username),
-        (this.userIcon = process.env.VUE_APP_URL + "/" + res.data.data.avatar);
-    });
-  }
+//   created() {
+//     //   获取用户信息
+//     info().then(res => {
+//       window.console.log(res);
+//     //   判断 token 的真假，如果 错误，删除token，打首页
+//      if (res.data.code===206) {
+//          this.$message.warning('登录状态错误请先登录')
+//          removeToken();
+//          this.$router.push('/login')
+//      }else if (res.data.code===200) {   
+//       (this.username = res.data.data.username),
+//         (this.userIcon = process.env.VUE_APP_URL + "/" + res.data.data.avatar);
+//          }
+//     });
+//   }
 };
 </script>
 
