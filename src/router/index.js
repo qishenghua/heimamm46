@@ -22,6 +22,11 @@ import  subject  from  '../views/index/subject/subject.vue'
 const  router = new VueRouter({
     // 路由规则
     routes:[
+        // 空地址的重定向
+        {
+            path:'/',
+            redirect:'/login'
+        },
         // 登录
        {
         path:'/login',
@@ -71,18 +76,23 @@ import {getToken,removeToken}  from '../utils/token'
 import {info}  from '../api/index'
 // 按需导入
 import {Message}  from 'element-ui'
+// 路由白名单 
+const whitePath = ['/login']
 // 前置导航守卫
 router.beforeEach((to, from, next) => {
     // 开启精度条
     NProgress.start();
     // 判断是否能往后走
-    if (to.path!='/login') {
+    // 这里用路由白名单来判断
+    if ( whitePath.includes(to.path.toLocaleLowerCase())!=true) {
         // 判断登录状态
         // 非空判断  如果为空
         if (getToken()==undefined) {
             // 提示用户登录     打回登录页
             Message.warning('登录状态有误，请检查')
             next('/login')
+            // 打回登录页，关闭精度条
+            NProgress.done();
         }else{
             // 真假判断
             info().then(res=>{
@@ -92,6 +102,8 @@ router.beforeEach((to, from, next) => {
                     Message.warning('登录状态有误，请检查')
                     removeToken();
                     next('/login')
+                     // 打回登录页，关闭精度条
+                NProgress.done();
                 }else if (res.data.code===200) {
                     // 成功，放走
                     next();
