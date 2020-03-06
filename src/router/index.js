@@ -39,6 +39,9 @@ const  router = new VueRouter({
        {
         path:'/index',
         component:index ,
+        meta:{
+            title:'首页'
+        },
         children:[
             // 配置组件 chart
             {
@@ -107,7 +110,7 @@ router.beforeEach((to, from, next) => {
     if ( whitePath.includes(to.path.toLocaleLowerCase())!=true) {
         // 判断登录状态
         // 非空判断  如果为空
-        if (getToken()==undefined) {
+        if (getToken() == undefined) {
             // 提示用户登录     打回登录页
             Message.warning('登录状态有误，请检查')
             next('/login')
@@ -131,7 +134,7 @@ router.beforeEach((to, from, next) => {
                 //    调用仓库
                 store.commit('changeName',username)
                 store.commit('changeIcon',userIcon)
-                   window.console.log(username,userIcon);
+                  
                     next();
                 }
             })
@@ -143,9 +146,11 @@ router.beforeEach((to, from, next) => {
     }
   })
 //  后置导航守卫
-router.afterEach((to) => {
-    // 关闭精度条
+router.afterEach(to => {
+    window.console.log(to);
+    // 关闭精进度条
     NProgress.done();
+    // 修改标题
     window.document.title=to.meta.title
   })
 // 暴露出去
