@@ -8,8 +8,8 @@
         <span>黑马面面</span>
       </div>
       <div class="right">
-        <img :src="userIcon" alt />
-        <span class="name">{{username}}</span>
+        <img :src="$store.state.userIcon" alt />
+        <span class="name">{{$store.state.username}},你好</span>
         <el-button @click="logout" type="primary">退出</el-button>
       </div>
     </el-header>
@@ -61,9 +61,9 @@ export default {
   data() {
     return {
       // 用户名
-      username: "",
+    //   username: "",
       // 用户头像
-      userIcon: "",
+    //   userIcon: "",
     //   定义是否折叠
     isCollapse:false,
     };
@@ -92,6 +92,9 @@ export default {
               // 调用退出接口成功
               // 移除token
               removeToken();
+            //   删除Vuex中用户信息
+            this.$store.commit('changeIcon','')
+            this.$store.commit('changeName','')
               //跳转登录页
               this.$router.push("/login");
             }

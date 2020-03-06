@@ -30,7 +30,10 @@ const  router = new VueRouter({
         // 登录
        {
         path:'/login',
-        component:login 
+        component:login,
+        meta:{
+            title:'登录页'
+        }
        },
     //    首页
        {
@@ -40,27 +43,42 @@ const  router = new VueRouter({
             // 配置组件 chart
             {
                 path:'chart',
-                component:chart
+                component:chart,
+                 meta:{
+            title:'数据概览'
+        }
             },
             // 配置组件 user
             {
                 path:'user',
-                component:user
+                component:user,
+                 meta:{
+            title:'用户列表'
+        }
             },
             // 配置组件 question
             {
                 path:'question',
-                component:question
+                component:question,
+                 meta:{
+            title:'题库列表'
+        }
             },
             // 配置组件 enterprise
             {
                 path:'enterprise',
-                component:enterprise
+                component:enterprise,
+                 meta:{
+            title:'企业列表'
+        }
             },
             // 配置组件 subject
             {
                 path:'subject',
-                component:subject
+                component:subject,
+                 meta:{
+            title:'学科列表'
+        }
             },
         ]
        },
@@ -74,6 +92,8 @@ import 'nprogress/nprogress.css'
 import {getToken,removeToken}  from '../utils/token'
 // 导入用户信息接口
 import {info}  from '../api/index'
+// 导入仓库
+import store  from '../store/index'
 // 按需导入
 import {Message}  from 'element-ui'
 // 路由白名单 
@@ -106,6 +126,12 @@ router.beforeEach((to, from, next) => {
                 NProgress.done();
                 }else if (res.data.code===200) {
                     // 成功，放走
+                    const username = res.data.data.username;
+                   const userIcon = process.env.VUE_APP_URL + "/" + res.data.data.avatar;
+                //    调用仓库
+                store.commit('changeName',username)
+                store.commit('changeIcon',userIcon)
+                   window.console.log(username,userIcon);
                     next();
                 }
             })
@@ -117,9 +143,10 @@ router.beforeEach((to, from, next) => {
     }
   })
 //  后置导航守卫
-router.afterEach(() => {
+router.afterEach((to) => {
     // 关闭精度条
     NProgress.done();
+    window.document.title=to.meta.title
   })
 // 暴露出去
 export default router
